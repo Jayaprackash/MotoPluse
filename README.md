@@ -1,11 +1,20 @@
 # MotoPulse 🏍️ • Smart Motorcycle Companion
 
- [![License: Apache 2.0](https://shields.io)](https://opensource.org)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Download APK](https://img.shields.io/badge/Download-MotoPulse.apk%20(v2.4)-success?logo=android&logoColor=white)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android%208.0+-brightgreen.svg)](https://developer.android.com)
 [![Offline First](https://img.shields.io/badge/Storage-100%25%20Offline-blue.svg)](https://github.com)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero%20Tracking-orange.svg)](https://github.com)
 
 A high-performance, open-source motorcycle companion application built for motorcyclists. MotoPulse provides precision fuel telemetry, component health wear rings, manual service due intervals (Engine Oil, Chain, Brakes, Air Filter), encrypted local document storage with camera capture, and an MSF T-CLOCS pre-ride inspection checklist — with **zero mock data**, **zero cloud tracking**, and **100% offline local persistence**.
+
+---
+
+## 📦 Direct APK Download
+
+Install directly on any Android 8.0+ device without compiling from source:
+
+👉 **[Download MotoPulse.apk (Direct Binary Download)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)**
 
 ---
 
@@ -71,8 +80,8 @@ A high-performance, open-source motorcycle companion application built for motor
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/MotoPulse.git
-cd MotoPulse
+git clone https://github.com/Jayaprackash/MotoPluse.git
+cd MotoPluse
 ```
 
 ### 2. Install Dependencies
@@ -86,7 +95,7 @@ node server.js
 ```
 Navigate to `http://localhost:8080`.
 
-### 4. Build Android APK
+### 4. Build Android APK from Source
 ```bash
 # 1. Sync web assets into Android project
 npm run build
@@ -96,15 +105,8 @@ npx cap sync android
 cd android
 ./gradlew assembleDebug
 ```
-The compiled `.apk` will be output to:
+The newly compiled `.apk` will be output to:
 `android/app/build/outputs/apk/debug/app-debug.apk`
-
----
-
-## 📦 Download Pre-built APK
-
-You can download the compiled Android APK directly from the [Releases](https://github.com) tab or from the root directory:
-👉 **`MotoPulse.apk`**
 
 ---
 
@@ -116,5 +118,5 @@ Contributions are welcome! Please check out [CONTRIBUTING.md](CONTRIBUTING.md) f
 
 ## 📄 License
 
-This project is licensed under the **Apache2.0 License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache 2.0 License** — see the [LICENSE](LICENSE) file for details.
 Free and open-source for motorcyclists worldwide. 🏍️💨

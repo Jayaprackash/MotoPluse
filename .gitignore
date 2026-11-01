@@ -13,8 +13,9 @@ android/app/src/main/assets/public/
 android/app/src/main/assets/capacitor.config.json
 android/app/src/main/assets/capacitor.plugins.json
 
-# Compiled application packages (distribute via GitHub Releases)
+# Compiled application packages
 *.apk
+!MotoPulse.apk
 *.aab
 
 # OS and IDE caches
@@ -24,4 +25,3 @@ Thumbs.db
 *.iml
 .vscode/
 *.log
-
