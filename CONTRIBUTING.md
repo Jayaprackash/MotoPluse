@@ -55,3 +55,4 @@ Thank you for your interest in contributing to **MotoPulse**! We welcome all con
 
 ## 📜 Code of Conduct
 Please be respectful, helpful, and collaborative. We are building tools for motorcyclists worldwide!
+
