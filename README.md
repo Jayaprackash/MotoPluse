@@ -31,17 +31,13 @@ Download and install directly without compiling from source:
 
 ## ✨ Features & Architecture
 
-### 1. Dual High-Performance Themes
-- **⚪ White & Scarlet Red (Light Mode):** Pure `#FFFFFF` background with crisp hairline dividers, deep charcoal typography (`#111315`), and vibrant Scarlet Red (`#D90B1F`) buttons and active states. Built for direct outdoor sunlight and tank bag mounts.
-- **⚫ Black & Scarlet Red (Dark Mode):** Deep stealth black (`#0B0C0E`), sleek `#131519` container cards, and glowing Scarlet Red (`#D90B1F`) accents for garage environments and night riding.
-- **1-Tap Quick Switch:** Toggle instantly via the header button (`⚫` / `⚪`) or sync automatically with your system sunrise/sunset.
 
-### 2. The Unified Dashboard View
+### 1. The Unified Dashboard View
 - **Odometer Flank:** Displays current vehicle distance with an authentic mechanical drum tumbler counter (`KM`).
 - **Mileage Flank:** Real-time calculated average fuel economy (`km/L` or `mpg`) with variance delta badges (`▲ +0.8 vs last fill`).
 - **Glanceable Telemetry:** Usable fuel range estimation (`⛽ ~380 km`) and overall maintenance health score (`96%`).
 
-### 3. Component Health Rings
+### 2. Component Health Rings
 - Animated circular progress gauges indicating remaining life before scheduled service:
   - 💧 **Engine Oil & Filter** (% life remaining, distance ran since last change, manual due target)
   - ⚙️ **Chain Cleaning & Lubrication** (with 500 km / 30-day interval alerts)
@@ -50,23 +46,23 @@ Download and install directly without compiling from source:
   - 🛞 **Tires & Suspension**
   - ➕ **Custom Components** (Fork Oil, Coolant, Drive Belt, etc.)
 
-### 4. Rapid Action Sheet
+### 3. Rapid Action Sheet
 - A fixed bottom interactive panel providing instant 1-tap thumb access to primary rider flows:
   - ⛽ **+ Add Fuel Entry** (with numerical pad, quick-stepper volume buttons `+1L`, `+2L`, `+5L`, `Full`, and live variance calculation)
   - 🔧 **+ Log Repair** (records workshop receipts, parts replaced tag pills, and manual target due dates)
 
-### 5. Chronological Service History Timeline
+### 4. Chronological Service History Timeline
 - Vertical timeline connected by a continuous spine with category skimming icons (💧 fluids, ⚙️ chain, 🛡️ brakes, ⚡ electrical, 🛞 tires, 🔧 mechanical).
 
-### 6. MSF T-CLOCS Pre-Ride Safety Walkaround
+### 5. MSF T-CLOCS Pre-Ride Safety Walkaround
 - 6-point pre-ride inspection checklist (Tires, Controls, Lights, Oil/Fluids, Chassis/Chain, Stands).
 
-### 7. Encrypted Document Vault & Camera Capture
+### 6. Encrypted Document Vault & Camera Capture
 - Store your RC, Insurance Policy, Pollution Certificate (PUC), and Driver's License offline on device.
 - In-app document camera capture with client-side image compression (~120–180 KB).
 - Fullscreen document viewer and color-coded expiration countdowns (`Valid`, `30d left`, `Expired`).
 
-### 8. 100% Offline & Data Sovereignty
+### 7. 100% Offline & Data Sovereignty
 - Zero server dependency, zero accounts, zero analytics trackers.
 - 1-click JSON backup export (Schema v2) and transactional import with conflict resolution (Replace or Merge).
 
