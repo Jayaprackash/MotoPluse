@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d12">
+  <meta name="description" content="MotoPulse - Clean motorcycle mileage tracking, service intervals, and document locker.">
+  <title>MotoPulse</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/jpeg" href="assets/icon.jpg">
+  <link rel="apple-touch-icon" href="assets/icon.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Hidden File Pickers -->
+  <input type="file" id="docFileInput" accept="image/*,application/pdf" style="display:none;" onchange="App.handleDocFileSelected(this)">
+  <input type="file" id="bikePhotoInput" accept="image/*" style="display:none;" onchange="App.handleBikePhotoSelected(this)">
+  <input type="file" id="importBackupInput" accept=".json" style="display:none;" onchange="App.handleImportBackup(this)">
+
+  <!-- Main App Shell -->
+  <div class="app-screen">
+
+    <!-- Minimal Header -->
+    <header class="app-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-family:var(--font-retro-sub); font-size:18px; font-weight:800; letter-spacing:-0.5px; color:var(--text-main); display:flex; align-items:center;">
+          MotoPulse<span style="color:var(--accent-primary);">.</span>
+        </span>
+        <div id="bikeSelectorPill" class="bike-selector-pill" onclick="App.openBikeSwitcherModal()" title="Switch or Manage Motorcycles">
+          <span id="headerBikeName" class="bike-selector-name">My Bike</span>
+          <span class="bike-selector-arrow">▼</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-button" id="headerThemeBtn" onclick="App.toggleTheme()" title="Switch Light/Dark Retro Mode">
+          <svg id="headerThemeIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <button class="icon-button" onclick="App.openEditBikeModal()" title="Edit Bike Details">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+        </button>
+        <button class="icon-button" onclick="App.openOdometerModal()" title="Quick Update Odometer">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15 15"></polyline>
+          </svg>
+        </button>
+        <button class="icon-button" onclick="App.openModal('speedDialModal')" title="Quick Add">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button class="icon-button" onclick="App.openSettingsModal()" title="Settings & Customization">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Screen Content -->
+    <div class="screen-scroll-container">
+
+      <!-- First Run / Empty State Setup Container -->
+      <div id="firstRunSetupContainer" style="display:none;">
+        <div class="clean-card" style="border-color: rgba(245, 158, 11, 0.4);">
+          <div style="font-size:16px; font-weight:700; color:var(--text-main); margin-bottom:4px; font-family:var(--font-retro-heading); letter-spacing:0.5px;">Setup Your Motorcycle</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Zero pre-filled mock data. Enter your bike details to start fresh:</div>
+          <form id="onboardingBikeForm" onsubmit="App.handleOnboardingSubmit(event)">
+            <div class="form-group">
+              <label class="form-label">Motorcycle Name</label>
+              <input type="text" id="setupBikeName" class="form-input" placeholder="e.g. Yamaha R15, Royal Enfield, KTM 390" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Registration Plate</label>
+                <input type="text" id="setupBikePlate" class="form-input" placeholder="e.g. MH 02 DX 4004" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Current Odometer (km)</label>
+                <input type="number" id="setupBikeOdo" class="form-input" placeholder="e.g. 8500" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Engine (cc)</label>
+                <input type="text" id="setupBikeDisplacement" class="form-input" placeholder="e.g. 350 cc">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fuel Tank (Litres)</label>
+                <input type="number" step="0.5" id="setupBikeTank" class="form-input" placeholder="e.g. 13.5">
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top:8px;">
+              Save & Start Tracking
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- App Main Content Tabs (shown when bike is active) -->
+      <div id="mainTabsContainer">
+
+        <!-- ================= TAB 1: GARAGE ================= -->
+        <section id="tab-garage" class="tab-view active">
+
+          <!-- Bike Hero Card -->
+          <div class="bike-hero-card">
+            <div class="bike-hero-media">
+              <img id="garageBikeImg" src="assets/bike1.jpg" alt="Motorcycle">
+              <div class="bike-hero-overlay"></div>
+              <button class="bike-photo-upload-btn" onclick="document.getElementById('bikePhotoInput').click()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                Upload Photo
+              </button>
+            </div>
+            <div class="bike-hero-body">
+              <div class="bike-hero-row">
+                <div>
+                  <h2 id="garageBikeName" class="bike-name">My Motorcycle</h2>
+                  <span id="garageBikePlate" class="bike-plate-badge">--</span>
+                </div>
+                <button class="btn-edit-bike" onclick="App.openEditBikeModal()">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                  Edit
+                </button>
+              </div>
+              <div class="bike-specs-row">
+                <div class="spec-item">
+                  <span class="spec-label">Engine</span>
+                  <span id="garageSpecEngine" class="spec-val">--</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Tank</span>
+                  <span id="garageSpecTank" class="spec-val">--</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Tire PSI</span>
+                  <span id="garageSpecTires" class="spec-val">--</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Year</span>
+                  <span id="garageSpecYear" class="spec-val">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- The Unified Dashboard View (Odometer Flanked by Calculated Avg Mileage) -->
+          <div class="unified-dashboard-view">
+            <div class="dash-flank dash-odo" onclick="App.openOdometerModal()" title="Tap to calibrate odometer">
+              <div class="dash-label">
+                <span>Current Odometer</span>
+                <span style="color:var(--accent-primary); font-size:11px;">✏️</span>
+              </div>
+              <div class="retro-drum-counter">
+                <span id="garageOdoReading" class="drum-digits">0</span>
+                <span class="drum-unit">KM</span>
+              </div>
+              <div class="dash-hint">Tap to calibrate</div>
+            </div>
+            <div class="dash-flank dash-mileage" onclick="App.switchTab('mileage')" title="Tap to view mileage telemetry">
+              <div class="dash-label">
+                <span>Calculated Avg</span>
+                <span style="font-size:10px;">→</span>
+              </div>
+              <div class="dash-value-wrap">
+                <span id="garageAvgMileage" class="dash-value">--</span>
+                <span class="dash-unit">km/L</span>
+              </div>
+              <div id="dashMileageDelta" class="dash-delta-tag good">Real-time calc</div>
+            </div>
+          </div>
+
+          <!-- Secondary Glanceable Row: Est. Fuel Range & Component Care Health -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+            <div class="stat-tile" onclick="App.switchTab('mileage')">
+              <div class="stat-tile-label">
+                <span>Est. Usable Range</span>
+                <span style="font-size:12px;">⛽</span>
+              </div>
+              <div class="stat-tile-value">
+                <span id="garageFuelRange">--</span>
+                <span class="stat-tile-unit">km</span>
+              </div>
+            </div>
+            <div class="stat-tile" onclick="App.switchTab('service')">
+              <div class="stat-tile-label">
+                <span>Care Health</span>
+                <span id="garageHealthDot" style="color:var(--status-good);">●</span>
+              </div>
+              <div class="stat-tile-value">
+                <span id="garageHealthVal">100%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Component Health Rings (Circular Progress Bars for Critical Components) -->
+          <div class="section-header">
+            <span class="section-title">Component Health Rings</span>
+            <button class="section-action-btn" onclick="App.switchTab('service')">All Wear →</button>
+          </div>
+          <div id="healthRingsContainer" class="health-rings-grid">
+            <!-- Dynamically populated with SVG Circular Progress Rings -->
+          </div>
+
+          <!-- Alert Strip -->
+          <div id="garageAlertContainer"></div>
+
+          <!-- Quick Care Preview -->
+          <div class="section-header">
+            <span class="section-title">Maintenance Status</span>
+            <button class="section-action-btn" onclick="App.switchTab('service')">View All →</button>
+          </div>
+          <div id="garageCarePreview"></div>
+
+          <!-- Ownership Cost Summary (TCO) -->
+          <div class="section-header" style="margin-top:14px;">
+            <span class="section-title">Ownership Cost & Expenses</span>
+          </div>
+          <div class="clean-card" style="margin-bottom:12px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+              <div>
+                <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Total Lifetime Cost</span>
+                <div id="garageTcoTotalSpend" style="font-size:18px; font-weight:700; color:var(--text-main); font-family:var(--font-mono); margin-top:2px;">₹0</div>
+              </div>
+              <div>
+                <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Overall Cost / km</span>
+                <div id="garageTcoCostPerKm" style="font-size:18px; font-weight:700; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:8px; font-size:11px; color:var(--text-muted);">
+              <span>This Month: <strong id="garageTcoMonthSpend" style="color:var(--text-main);">₹0</strong></span>
+              <span id="garageTcoBreakdown">Fuel: ₹0 • Service: ₹0</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ================= TAB 2: MILEAGE & FUEL ================= -->
+        <section id="tab-mileage" class="tab-view">
+
+          <!-- Mileage Summary Card -->
+          <div class="clean-card" style="border-color: rgba(245, 158, 11, 0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 12px;">
+              <div>
+                <span style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Average Fuel Economy</span>
+                <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
+                  <span id="mileageHeroAvg" style="font-family:var(--font-mono); font-size:34px; font-weight:700; color:var(--text-main);">--</span>
+                  <span style="font-size:14px; color:var(--accent-primary); font-weight:600;">km/L</span>
+                </div>
+              </div>
+              <button class="btn-secondary" style="padding: 7px 12px; font-size: 12px;" onclick="App.openLogRefuelModal()">
+                + Log Refuel
+              </button>
+            </div>
+
+            <div class="stats-grid-4" style="margin-bottom:0; gap:8px;">
+              <div style="background:var(--bg-app); border-radius:8px; padding:8px 10px;">
+                <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Last Refill</span>
+                <div id="mileageHeroLast" style="font-size:15px; font-weight:600; color:var(--text-main); font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+              <div style="background:var(--bg-app); border-radius:8px; padding:8px 10px;">
+                <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Cost / km</span>
+                <div id="mileageHeroCost" style="font-size:15px; font-weight:600; color:var(--accent-cyan); font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+              <div style="background:var(--bg-app); border-radius:8px; padding:8px 10px;">
+                <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Total Spent</span>
+                <div id="mileageHeroTotalSpend" style="font-size:15px; font-weight:600; color:var(--text-main); font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+              <div style="background:var(--bg-app); border-radius:8px; padding:8px 10px;">
+                <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Total Litres</span>
+                <div id="mileageHeroLitres" style="font-size:15px; font-weight:600; color:var(--text-main); font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trend Chart -->
+          <!-- Diagnostic Signals & Drop Alert -->
+          <div id="mileageDiagnosticAlert"></div>
+
+          <div class="clean-card" style="margin-bottom:12px; padding:10px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px;">
+              <div>
+                <span style="color:var(--text-dim); text-transform:uppercase;">Best</span>
+                <div id="mileageBestVal" style="color:var(--status-good); font-weight:700; font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+              <div style="color:var(--border-subtle);">|</div>
+              <div>
+                <span style="color:var(--text-dim); text-transform:uppercase;">Worst</span>
+                <div id="mileageWorstVal" style="color:var(--status-warn); font-weight:700; font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+              <div style="color:var(--border-subtle);">|</div>
+              <div>
+                <span style="color:var(--text-dim); text-transform:uppercase;">Range (Est.)</span>
+                <div id="mileageRangeVal" style="color:var(--accent-primary); font-weight:700; font-family:var(--font-mono); margin-top:2px;">--</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="clean-card">
+            <div class="section-title" style="margin-bottom: 8px;">Mileage Trend</div>
+            <div class="chart-container">
+              <canvas id="mileageChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Fuel Logbook -->
+          <div class="section-header">
+            <span class="section-title">Fuel Logbook</span>
+            <button class="section-action-btn" onclick="App.openLogRefuelModal()">+ Add Refuel</button>
+          </div>
+          <div id="refuelHistoryList"></div>
+
+        </section>
+
+        <!-- ================= TAB 3: SERVICE ================= -->
+        <section id="tab-service" class="tab-view">
+
+          <div style="display:flex; gap:10px; margin-bottom: 14px;">
+            <button class="btn-primary" style="flex:1;" onclick="App.openLogServiceModal()">
+              + Log Service Record
+            </button>
+            <button class="btn-secondary" onclick="App.openAddCustomServiceItemModal()" title="Add custom component">
+              + Custom Item
+            </button>
+          </div>
+
+          <!-- Service Component Items (Engine Oil, Chain, etc.) -->
+          <div class="section-header">
+            <span class="section-title">Maintenance Wear & Due Dates</span>
+          </div>
+          <div id="fullServiceItemsList"></div>
+
+          <!-- Chronological Service History Timeline -->
+          <div class="section-header">
+            <span class="section-title">Chronological Service History</span>
+          </div>
+          <div id="serviceHistoryList" class="service-timeline"></div>
+
+        </section>
+
+        <!-- ================= TAB 4: CHECKLIST ================= -->
+        <section id="tab-preride" class="tab-view">
+
+          <div class="clean-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <div>
+              <div style="font-size:14px; font-weight:700; color:var(--text-main); font-family:var(--font-retro-heading); letter-spacing:0.5px;">Pre-Ride Safety Inspection</div>
+              <div id="tclocsLastInspectionText" style="font-size:11px; color:var(--text-muted);">Last inspected: Not completed today</div>
+            </div>
+            <span id="tclocsStatusBadge" class="doc-badge neutral">PENDING</span>
+          </div>
+
+          <div class="alert-strip info" style="margin-bottom:12px; font-size:11px; line-height:1.4;">
+            <div class="alert-strip-text">
+              <strong>Owner's Manual Specs:</strong> Inspection values below reflect your motorcycle's configured specifications. This is a user-recorded check, not an automated sensor guarantee.
+            </div>
+          </div>
+
+          <div id="tclocsChecklist"></div>
+
+          <button class="btn-primary" style="margin-top: 10px;" onclick="App.markAllTclocsClear()">
+            ✓ Mark All Clear
+          </button>
+
+        </section>
+
+        <!-- ================= TAB 5: DOCUMENTS & SETTINGS ================= -->
+        <section id="tab-vault" class="tab-view">
+
+          <div class="section-header" style="margin-top: 0;">
+            <span class="section-title">Vehicle Documents</span>
+            <button class="section-action-btn" onclick="App.openAddDocModal()">+ Add Document</button>
+          </div>
+
+          <!-- Document List -->
+          <div id="documentLockerList"></div>
+
+          <!-- Roadside Assistance -->
+          <div class="clean-card" style="margin-top: 18px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--text-main);">Roadside Assistance</div>
+              <div style="font-size:11px; color:var(--text-muted);">24/7 Breakdown Emergency</div>
+            </div>
+            <a id="btnRsaDirectCall" href="tel:+9118002098004" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; color:var(--accent-primary);">
+              📞 Call RSA
+            </a>
+          </div>
+
+          <!-- Settings & Data Management -->
+          <div class="section-header" style="margin-top: 20px;">
+            <span class="section-title">Preferences & Workshop</span>
+            <button class="section-action-btn" onclick="App.openSettingsModal()">Open Customizer →</button>
+          </div>
+
+          <div class="clean-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <div style="font-size:13px; font-weight:600; color:var(--text-main);">Sound Effects</div>
+                <div style="font-size:11px; color:var(--text-muted);">Analog audio clicks on button tap</div>
+              </div>
+              <input type="checkbox" id="soundToggleCheck" checked style="width:18px; height:18px; accent-color:var(--accent-primary);" onchange="App.toggleSoundSetting(this)">
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <div style="font-size:13px; font-weight:600; color:var(--text-main);">Retro Biker Customizer</div>
+                <div style="font-size:11px; color:var(--text-muted);">Dark/White themes, accent colors & units</div>
+              </div>
+              <button class="btn-secondary" style="font-size:11px; padding:6px 12px;" onclick="App.openSettingsModal()">
+                ⚙️ Settings
+              </button>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top: 12px;">
+              <button class="btn-secondary" style="flex:1; font-size:12px;" onclick="App.exportData()">
+                Export Backup
+              </button>
+              <button class="btn-secondary" style="flex:1; font-size:12px;" onclick="document.getElementById('importBackupInput').click()">
+                Import Backup
+              </button>
+            </div>
+
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:13px; font-weight:500; color:var(--status-danger);">Reset All Data</div>
+                <div style="font-size:11px; color:var(--text-muted);">Wipe all records & start completely clean</div>
+              </div>
+              <button class="btn-mini-action danger" style="padding: 6px 10px; font-size: 11px;" onclick="App.resetAllDataClean()">
+                Wipe & Reset
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+      </div> <!-- /mainTabsContainer -->
+
+    </div> <!-- /screen-scroll-container -->
+
+    <!-- ================= RAPID ACTION SHEET (Fixed Bottom Interactive Panel) ================= -->
+    <div id="rapidActionSheet" class="rapid-action-sheet">
+      <button class="btn-rapid-fuel" onclick="App.openLogRefuelModal()" title="Add Fuel Entry">
+        <span style="font-size:16px;">⛽</span>
+        <span>+ Add Fuel Entry</span>
+      </button>
+      <button class="btn-rapid-service" onclick="App.openLogServiceModal()" title="Log Mechanical Repair">
+        <span style="font-size:15px;">🔧</span>
+        <span>+ Log Repair</span>
+      </button>
+    </div>
+
+    <!-- ================= BOTTOM NAVIGATION ================= -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="garage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Garage</span>
+      </button>
+
+      <button class="nav-item" data-tab="mileage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        <span>Fuel</span>
+      </button>
+
+      <button class="nav-item" data-tab="service">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        </svg>
+        <span>Service</span>
+      </button>
+
+      <button class="nav-item" data-tab="preride">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>Checklist</span>
+      </button>
+
+      <button class="nav-item" data-tab="vault">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Docs</span>
+      </button>
+    </nav>
+
+  </div> <!-- /app-screen -->
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. SPEED DIAL MODAL -->
+  <div id="speedDialModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="speedDialModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 class="modal-title">Quick Actions</h3>
+        <button class="modal-close-btn" data-close-modal="speedDialModal">✕</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn-secondary" style="justify-content:flex-start; padding:12px;" onclick="App.openLogRefuelModal()">
+          ⛽ Log Fuel Refill
+        </button>
+        <button class="btn-secondary" style="justify-content:flex-start; padding:12px;" onclick="App.openLogServiceModal()">
+          🔧 Log Maintenance Service
+        </button>
+        <button class="btn-secondary" style="justify-content:flex-start; padding:12px;" onclick="App.openAddDocModal()">
+          📁 Add / Upload Document
+        </button>
+        <button class="btn-secondary" style="justify-content:flex-start; padding:12px;" onclick="App.openOdometerModal()">
+          🔢 Update Odometer
+        </button>
+        <button class="btn-secondary" style="justify-content:flex-start; padding:12px;" onclick="App.openEditBikeModal()">
+          🏍️ Edit Motorcycle Details
+        </button>
+        <button class="btn-secondary" style="justify-content:flex-start; padding:12px;" onclick="App.openSettingsModal()">
+          ⚙️ App Settings & Customizer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. REFUEL MODAL (ADD & EDIT) -->
+  <div id="refuelModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="refuelModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 id="refuelModalTitle" class="modal-title">Log Fuel Refill</h3>
+        <button class="modal-close-btn" data-close-modal="refuelModal">✕</button>
+      </div>
+      <form id="refuelForm">
+        <input type="hidden" id="editRefuelId" value="">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="refuelDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Odometer (km)</label>
+            <input type="number" id="refuelOdometer" class="form-input form-input-lg" placeholder="15200" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Fuel (Litres)</label>
+            <input type="number" step="0.01" id="refuelLitres" class="form-input form-input-lg" placeholder="10.5" required>
+            <div class="quick-stepper-row">
+              <button type="button" class="quick-step-btn" onclick="App.quickAddLitres(1)">+1L</button>
+              <button type="button" class="quick-step-btn" onclick="App.quickAddLitres(2)">+2L</button>
+              <button type="button" class="quick-step-btn" onclick="App.quickAddLitres(5)">+5L</button>
+              <button type="button" class="quick-step-btn" onclick="App.quickSetFullTank()">Full</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price / Litre (₹)</label>
+            <input type="number" step="0.01" id="refuelPrice" class="form-input" placeholder="102.5">
+            <label class="form-label" style="margin-top:6px;">Total Bill (₹)</label>
+            <input type="number" step="0.01" id="refuelCost" class="form-input" placeholder="Total" required>
+          </div>
+        </div>
+
+        <!-- Real-Time Performance Variance Feedback -->
+        <div id="refuelVarianceBox" class="refuel-variance-box"></div>
+
+        <div class="form-group">
+          <label class="form-label">Station / Brand</label>
+          <input type="text" id="refuelStation" class="form-input" placeholder="e.g. Shell, Indian Oil, HP">
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="refuelFullTank" checked style="width:18px; height:18px; accent-color:var(--accent-primary);">
+          <label for="refuelFullTank" style="font-size:13px; color:var(--text-main); cursor:pointer;">Full Tank Refill (Enables mileage calculation)</label>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top:10px;">
+          Save Fuel Record
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. SERVICE MODAL (LOG SERVICE RECORD WITH MANUAL DUE DATE & DUE ODO) -->
+  <div id="serviceModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="serviceModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 id="serviceModalTitle" class="modal-title">Log Service Record</h3>
+        <button class="modal-close-btn" data-close-modal="serviceModal">✕</button>
+      </div>
+      <form id="serviceForm">
+        <input type="hidden" id="editServiceId" value="">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Service Date</label>
+            <input type="date" id="serviceDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Odometer (km)</label>
+            <input type="number" id="serviceOdometer" class="form-input" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Service Title / Type</label>
+            <input type="text" id="serviceTypeSelect" class="form-input" placeholder="e.g. Oil Change, Full Service" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Cost (₹)</label>
+            <input type="number" id="serviceCost" class="form-input" placeholder="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Workshop / Done By</label>
+          <input type="text" id="serviceWorkshop" class="form-input" placeholder="e.g. Authorized Service, Self DIY">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">What Things Changed / Serviced?</label>
+          <div id="servicePartsGrid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:6px; margin-top:4px;"></div>
+        </div>
+
+        <!-- Manual Next Due Date & Next Due Odometer Setting -->
+        <div class="clean-card" style="background:var(--bg-app); margin:12px 0 14px; padding:12px;">
+          <div style="font-size:12px; font-weight:700; color:var(--accent-primary); text-transform:uppercase; margin-bottom:8px;">
+            Set Next Service Due (Manual)
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Next Due Odometer (km)</label>
+              <input type="number" id="serviceNextDueOdo" class="form-input" placeholder="e.g. 15000">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Next Due Date</label>
+              <input type="date" id="serviceNextDueDate" class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Service Notes / Oil Grade</label>
+          <textarea id="serviceNotes" class="form-textarea" rows="2" placeholder="e.g. Motul 7100 15W-50 oil, OEM filter replaced..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary">
+          Save Service Record
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. MANUAL SERVICE ITEM DUE SETTER MODAL (For Engine Oil & Components) -->
+  <div id="editServiceItemModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="editServiceItemModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 id="editItemModalTitle" class="modal-title">Set Due & History</h3>
+        <button class="modal-close-btn" data-close-modal="editServiceItemModal">✕</button>
+      </div>
+      <form id="editServiceItemForm" onsubmit="App.handleSaveServiceItem(event)">
+        <input type="hidden" id="editServiceItemId" value="">
+        
+        <div class="form-group">
+          <label class="form-label">Component Name</label>
+          <input type="text" id="editServiceItemName" class="form-input" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Last Changed At (km)</label>
+            <input type="number" id="editServiceItemLastOdo" class="form-input" placeholder="e.g. 10000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Changed Date</label>
+            <input type="date" id="editServiceItemLastDate" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Next Due Odometer (km)</label>
+            <input type="number" id="editServiceItemNextOdo" class="form-input" placeholder="e.g. 14000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Next Due Date</label>
+            <input type="date" id="editServiceItemNextDate" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notes / Specification</label>
+          <input type="text" id="editServiceItemNotes" class="form-input" placeholder="e.g. Motul 7100 10W-50, DOT 4 Fluid">
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button type="submit" class="btn-primary" style="flex:1;">
+            Save & Update
+          </button>
+          <button type="button" class="btn-secondary" style="color:var(--status-danger);" onclick="App.deleteCustomServiceItem()">
+            Delete Item
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. QUICK ODOMETER MODAL -->
+  <div id="odometerModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="odometerModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 class="modal-title">Update Odometer</h3>
+        <button class="modal-close-btn" data-close-modal="odometerModal">✕</button>
+      </div>
+      <form id="odoForm">
+        <div class="form-group">
+          <label class="form-label">Current Reading (km)</label>
+          <input type="number" id="quickOdoInput" class="form-input" style="font-size:22px; font-weight:700; text-align:center; font-family:var(--font-mono);" required>
+        </div>
+        <div style="display:flex; gap:6px; justify-content:center; margin-bottom:14px;">
+          <button type="button" class="btn-mini-action" onclick="App.adjustQuickOdo(10)">+10 km</button>
+          <button type="button" class="btn-mini-action" onclick="App.adjustQuickOdo(50)">+50 km</button>
+          <button type="button" class="btn-mini-action" onclick="App.adjustQuickOdo(100)">+100 km</button>
+          <button type="button" class="btn-mini-action" onclick="App.adjustQuickOdo(500)">+500 km</button>
+        </div>
+        <button type="submit" class="btn-primary">
+          Update Odometer
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. EDIT MOTORCYCLE MODAL -->
+  <div id="editBikeModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="editBikeModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 class="modal-title">Edit Motorcycle</h3>
+        <button class="modal-close-btn" data-close-modal="editBikeModal">✕</button>
+      </div>
+      <form id="editBikeForm">
+        <div class="form-group">
+          <label class="form-label">Bike Name</label>
+          <input type="text" id="editBikeName" class="form-input" placeholder="e.g. Royal Enfield Hunter 350" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">License Plate</label>
+            <input type="text" id="editBikePlate" class="form-input" placeholder="e.g. DL 01 AB 1234" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Year</label>
+            <input type="number" id="editBikeYear" class="form-input" placeholder="2024">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Engine (cc)</label>
+            <input type="text" id="editBikeDisplacement" class="form-input" placeholder="e.g. 350 cc">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tank (Litres)</label>
+            <input type="number" step="0.5" id="editBikeTank" class="form-input" placeholder="e.g. 13.5">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Front Tire (Cold PSI)</label>
+            <input type="number" id="editBikeFrontPsi" class="form-input" placeholder="29">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rear Tire (Cold PSI)</label>
+            <input type="number" id="editBikeRearPsi" class="form-input" placeholder="33">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Drive Chain Slack (mm)</label>
+          <input type="text" id="editBikeChainSlack" class="form-input" placeholder="e.g. 25-30 mm">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Roadside Assistance Phone</label>
+          <input type="text" id="editBikeRsa" class="form-input" placeholder="+91 1800 000 000">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <button type="submit" class="btn-primary" style="flex:1;">
+            Save Changes
+          </button>
+          <button type="button" class="btn-secondary" style="color:var(--status-danger);" onclick="App.deleteCurrentBike()">
+            Delete Bike
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. DOCUMENT EDIT / ADD MODAL -->
+  <div id="editDocModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="editDocModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 id="editDocModalTitle" class="modal-title">Document Details</h3>
+        <button class="modal-close-btn" data-close-modal="editDocModal">✕</button>
+      </div>
+      <form id="editDocForm">
+        <input type="hidden" id="editDocId" value="">
+        <div class="form-group">
+          <label class="form-label">Document Title</label>
+          <input type="text" id="editDocTitle" class="form-input" placeholder="e.g. Registration Certificate (RC), Insurance" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Document Number</label>
+          <input type="text" id="editDocNumber" class="form-input" placeholder="e.g. MH01-2024-001928" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Issuing Authority / Company</label>
+            <input type="text" id="editDocIssuer" class="form-input" placeholder="e.g. RTO, HDFC Ergo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Expiry Date</label>
+            <input type="date" id="editDocExpiry" class="form-input">
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top:10px;">
+          Save Document
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. FULLSCREEN DOCUMENT VIEWER MODAL -->
+  <div id="viewDocModal" class="doc-viewer-modal">
+    <div class="doc-viewer-header">
+      <div>
+        <h4 id="viewDocTitle" style="font-size:15px; font-weight:600;">Document</h4>
+        <div id="viewDocMeta" style="font-size:11px; color:#aaa;">Preview</div>
+      </div>
+      <button class="icon-button" onclick="App.closeModal('viewDocModal')" style="background:transparent; border:none; color:#fff; font-size:22px;">✕</button>
+    </div>
+    <div class="doc-viewer-content">
+      <img id="viewDocImg" src="" alt="Document Preview">
+    </div>
+    <div class="doc-viewer-footer">
+      <button class="btn-primary" style="flex:1;" onclick="App.triggerDocFileUpload(App.currentViewingDocId)">
+        📷 Replace Photo
+      </button>
+      <button class="btn-secondary" style="color:var(--status-danger);" onclick="App.removeDocFile(App.currentViewingDocId)">
+        Remove File
+      </button>
+    </div>
+  </div>
+
+  <!-- 9. BIKE SWITCHER MODAL -->
+  <div id="bikeSwitcherModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="bikeSwitcherModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 class="modal-title">Motorcycles</h3>
+        <button class="modal-close-btn" data-close-modal="bikeSwitcherModal">✕</button>
+      </div>
+      <div id="garageBikesList" style="margin-bottom:14px;"></div>
+      <button class="btn-primary" onclick="App.openNewBikeModal()">
+        + Add Another Motorcycle
+      </button>
+    </div>
+  </div>
+
+  <!-- 10. NEW BIKE MODAL -->
+  <div id="newBikeModal" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle-bar" data-close-modal="newBikeModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 class="modal-title">Add Motorcycle</h3>
+        <button class="modal-close-btn" data-close-modal="newBikeModal">✕</button>
+      </div>
+      <form id="newBikeForm">
+        <div class="form-group">
+          <label class="form-label">Motorcycle Name</label>
+          <input type="text" id="newBikeName" class="form-input" placeholder="e.g. Royal Enfield Classic 350" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Registration Plate</label>
+            <input type="text" id="newBikePlate" class="form-input" placeholder="e.g. DL 01 AB 1234" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Year</label>
+            <input type="number" id="newBikeYear" class="form-input" value="2024">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Engine (cc)</label>
+            <input type="text" id="newBikeDisplacement" class="form-input" placeholder="350 cc">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fuel Tank (L)</label>
+            <input type="number" step="0.5" id="newBikeTank" class="form-input" value="13.5">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Front Cold PSI</label>
+            <input type="number" id="newBikeFrontPsi" class="form-input" value="29">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rear Cold PSI</label>
+            <input type="number" id="newBikeRearPsi" class="form-input" value="33">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chain Slack Spec</label>
+          <input type="text" id="newBikeChainSlack" class="form-input" value="25-30 mm">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Odometer (km)</label>
+          <input type="number" id="newBikeOdo" class="form-input" placeholder="0" required>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top:10px;">
+          Add to Garage
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 11. SETTINGS & CUSTOMIZATION MODAL -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-bottom-sheet" style="max-height:88vh;">
+      <div class="modal-handle-bar" data-close-modal="settingsModal"><div class="modal-handle"></div></div>
+      <div class="modal-header-row">
+        <h3 class="modal-title">⚙️ App Settings</h3>
+        <button class="modal-close-btn" data-close-modal="settingsModal">✕</button>
+      </div>
+
+      <div style="overflow-y:auto; padding-bottom:16px;">
+        <!-- Theme & Appearance -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <span>🎨 Appearance & Contrast</span>
+          </div>
+          <div class="theme-pill-group">
+            <button type="button" class="theme-pill" data-theme-val="dark" onclick="App.setTheme('dark')">
+              <span style="font-size:18px;">⚫</span>
+              <span>Black & Red</span>
+            </button>
+            <button type="button" class="theme-pill" data-theme-val="light" onclick="App.setTheme('light')">
+              <span style="font-size:18px;">⚪</span>
+              <span>White & Red</span>
+            </button>
+            <button type="button" class="theme-pill" data-theme-val="auto" onclick="App.setTheme('auto')">
+              <span style="font-size:18px;">📱</span>
+              <span>Auto System</span>
+            </button>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px; font-family:var(--font-retro-sub);">
+            Accent Palette
+          </div>
+          <div class="accent-swatch-group">
+            <button type="button" class="accent-swatch-btn" data-accent-val="ferrari" onclick="App.setAccent('ferrari')" title="Ferrari Red (#E60000)">
+              <span class="accent-swatch-circle" style="background:#E60000; box-shadow:0 0 8px rgba(230,0,0,0.5);"></span>
+              <span class="accent-swatch-label">Ferrari</span>
+            </button>
+            <button type="button" class="accent-swatch-btn" data-accent-val="orange" onclick="App.setAccent('orange')" title="Safety Orange (#FF5722)">
+              <span class="accent-swatch-circle" style="background:#FF5722;"></span>
+              <span class="accent-swatch-label">Orange</span>
+            </button>
+            <button type="button" class="accent-swatch-btn" data-accent-val="mint" onclick="App.setAccent('mint')" title="Neon Mint (#00E676)">
+              <span class="accent-swatch-circle" style="background:#00E676;"></span>
+              <span class="accent-swatch-label">Mint</span>
+            </button>
+            <button type="button" class="accent-swatch-btn" data-accent-val="amber" onclick="App.setAccent('amber')" title="Speedo Gold (#F59E0B)">
+              <span class="accent-swatch-circle" style="background:#f59e0b;"></span>
+              <span class="accent-swatch-label">Gold</span>
+            </button>
+            <button type="button" class="accent-swatch-btn" data-accent-val="emerald" onclick="App.setAccent('emerald')" title="Racing Green (#10B981)">
+              <span class="accent-swatch-circle" style="background:#10b981;"></span>
+              <span class="accent-swatch-label">Green</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Units & Currency -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <span>📏 Units & Currency</span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Currency Symbol</label>
+              <input type="text" id="settingCurrency" class="form-input" placeholder="₹" maxlength="4">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Distance Unit</label>
+              <select id="settingUnitDist" class="form-input">
+                <option value="km">Kilometers (km)</option>
+                <option value="mi">Miles (mi)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Fuel Volume</label>
+              <select id="settingUnitFuel" class="form-input">
+                <option value="litres">Litres (L)</option>
+                <option value="gallons">Gallons (US)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mileage Unit</label>
+              <select id="settingUnitMileage" class="form-input">
+                <option value="km/L">km / Litre</option>
+                <option value="mpg">Miles / Gallon</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="btn-secondary" style="width:100%; margin-top:4px;" onclick="App.saveUnitSettings()">
+            Save Units & Currency
+          </button>
+        </div>
+
+        <!-- Feedback & Sound FX -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <span>🔊 Haptics & Feedback</span>
+          </div>
+          <div class="settings-toggle-row">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:var(--text-main);">Mechanical Click Sounds</div>
+              <div style="font-size:11px; color:var(--text-dim);">Subtle retro audio feedback on button taps</div>
+            </div>
+            <input type="checkbox" id="settingSoundToggle" onchange="App.toggleSoundFX(this.checked)" style="width:20px; height:20px; accent-color:var(--accent-primary);">
+          </div>
+        </div>
+
+        <!-- Data Backup & Restore -->
+        <div class="settings-section-card">
+          <div class="settings-section-header">
+            <span>💾 Data Vault & Backup</span>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); line-height:1.4; margin-bottom:12px;">
+            MotoPulse stores 100% of your records locally on your device. Export a backup anytime to keep your service and mileage history safe.
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn-secondary" style="flex:1;" onclick="App.exportBackup()">
+              📥 Export Backup
+            </button>
+            <button type="button" class="btn-secondary" style="flex:1;" onclick="document.getElementById('importBackupFileInput').click()">
+              📤 Import Backup
+            </button>
+          </div>
+          <input type="file" id="importBackupFileInput" accept=".json" style="display:none;" onchange="App.handleImportBackup(event)">
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-section-card" style="border-color:rgba(239,68,68,0.3);">
+          <div class="settings-section-header" style="color:var(--status-danger);">
+            <span>⚠️ Danger Zone</span>
+          </div>
+          <p style="font-size:11px; color:var(--text-dim); line-height:1.4; margin-bottom:10px;">
+            Need to start fresh? Resetting will wipe all motorcycles, fuel logs, service history, and documents.
+          </p>
+          <button type="button" class="btn-secondary" style="width:100%; color:var(--status-danger); border-color:rgba(239,68,68,0.4);" onclick="App.confirmFactoryReset()">
+            Factory Wipe All Records
+          </button>
+        </div>
+
+        <!-- App Specs -->
+        <div style="text-align:center; padding:12px 0 6px; font-family:var(--font-retro-sub); font-size:11px; color:var(--text-dim);">
+          <span style="font-family:var(--font-retro); font-size:13px; color:var(--text-muted);">MOTOPULSE</span> v2.4 Retro Edition<br>
+          Handcrafted for Motorcyclists • 100% Offline
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/mileage.js"></script>
+  <script src="js/service.js"></script>
+  <script src="js/pre-ride.js"></script>
+  <script src="js/vault.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

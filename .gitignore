@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Android build outputs & local environment configs
+.gradle/
+build/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+
+# Compiled application packages (distribute via GitHub Releases)
+*.apk
+*.aab
+
+# OS and IDE caches
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+*.log

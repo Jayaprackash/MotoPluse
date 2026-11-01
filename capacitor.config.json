@@ -1,0 +1,7 @@
+{
+  "appId": "com.motopulse.bikecare",
+  "appName": "MotoPulse",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
+

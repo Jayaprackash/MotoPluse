@@ -1,0 +1,527 @@
+
+MOTORCYCLE MANAGEMENT APP
+
+Product Review, Bug-Prevention Checklist & Feature Roadmap
+
+Implementation guide for improving reliability, usability, and ownership insights
+
+Document purpose
+
+Scope
+
+Review the current product concept
+
+Garage, fuel and mileage, maintenance, safety inspection, document locker, backup and reset
+
+Identify likely failure cases
+
+Calculations, editing/deleting records, dates, reminders, data integrity, storage and security
+
+Prioritize improvements
+
+Phased roadmap, suggested data model, acceptance checks and additional features
+
+Version 1.0 | Prepared 1 November 2026
+
+
+
+1. Executive Summary
+
+The application already covers the core motorcycle ownership workflow: initial setup, garage dashboard, fuel tracking, maintenance schedules, pre-ride inspection, vehicle documents, and backup/restore. The recommended direction is to evolve it into a reliable Motorcycle Ownership & Maintenance Assistant rather than adding many advanced features before the existing workflows are dependable.
+
+Top priorities
+
+Make fuel-economy calculations correct for full-tank, partial-fill, edited, deleted, and out-of-order records.
+
+Make maintenance due calculations work independently by distance and calendar date.
+
+Use motorcycle-specific manufacturer guidance for tyre pressure, chain slack, and maintenance intervals.
+
+Protect data during backup import, reset, migration, and storage failures.
+
+Add reminders, expense analytics, fuel economy trends, and a repair journal after the fundamentals are reliable.
+
+2. Current Feature Review
+
+Area
+
+What is strong
+
+What to verify or improve
+
+Initial setup
+
+No mock data; motorcycle name, registration and odometer
+
+Validate required fields, units, duplicates, and safe first-run state
+
+Garage dashboard
+
+Odometer, mileage, range, health and motorcycle switcher
+
+Clearly distinguish measured values from estimates; avoid misleading health scores
+
+Fuel logbook
+
+Refill history, full-tank method, costs and trend chart
+
+Correct partial-fill handling and recompute analytics after changes
+
+Maintenance
+
+Distance/date countdowns, custom items and service records
+
+Support both distance and time intervals; preserve history after resets
+
+Pre-ride safety
+
+T-CLOCS-inspired inspection checklist
+
+Use model-specific specifications and timestamp each inspection
+
+Documents
+
+Image upload, expiry countdown and viewer
+
+Validate expiry dates, protect sensitive documents, and test image backup
+
+Backup and reset
+
+JSON export/import and wipe/reset
+
+Version backups, validate before import, prevent duplicates and make reset deliberate
+
+3. Critical Logic and Bug-Prevention Requirements
+
+3.1 Fuel and mileage calculation
+
+For a full-tank-to-full-tank interval, calculate distance as the current valid full-tank odometer minus the previous valid full-tank odometer. Divide that distance by the fuel consumed during the interval. This assumes the tank was filled to a comparable full level at both endpoints.
+
+Refill
+
+Odometer
+
+Litres
+
+Meaning
+
+A
+
+8,500 km
+
+10.0 L
+
+Starting full tank; no completed interval yet
+
+B
+
+8,720 km
+
+9.5 L
+
+220 km / 9.5 L = 23.16 km/L
+
+C
+
+8,950 km
+
+10.2 L
+
+230 km / 10.2 L = 22.55 km/L
+
+Required safeguards:
+
+Do not treat the first refuel as a completed mileage measurement.
+
+Do not calculate an interval mileage from a partial refill as if it were a full refill.
+
+When partial refills occur, accumulate fuel until the next valid full-tank endpoint, or clearly use a different documented method.
+
+Show mileage as Pending/Not enough data until a valid interval exists.
+
+Warn if a new odometer reading is below the previous reading; allow correction only with an explicit confirmation or correction workflow.
+
+When an old entry is edited or deleted, recompute every affected subsequent interval, lifetime average, cost per kilometre, and chart.
+
+For lifetime mileage, calculate total valid distance divided by total fuel attributed to valid intervals; do not take a simple average of trip mileage values.
+
+Validate litres and price as positive values; handle zero, missing, and implausible entries without crashing.
+
+3.2 Maintenance and service due logic
+
+Distance-based and date-based schedules must be evaluated independently. A maintenance item is due if either configured trigger is reached. The UI should distinguish Upcoming, Due Soon, Overdue, and Not Configured.
+
+Example input
+
+Expected result
+
+Last changed: 8,000 km; next due: 11,000 km; current: 9,200 km
+
+Ran: 1,200 km; Due in: 1,800 km
+
+Calendar due date has passed but distance remains
+
+Mark Due/Overdue based on the date rule
+
+Next due odometer is less than last changed odometer
+
+Reject or request correction; do not silently save
+
+User taps Changed Today
+
+Create a service event at current odometer and date; retain history
+
+Support both kilometre and calendar intervals where appropriate.
+
+Do not hardcode one universal interval for every motorcycle or component.
+
+Use manufacturer recommendations or user-configured values for oil, filters, coolant, brake fluid, tyres, chain slack and other items.
+
+Keep a record of what changed, when, at what odometer, by whom (optional), and at what cost.
+
+Editing an interval must not silently rewrite past service events.
+
+Show negative distance/time as Overdue rather than a confusing positive countdown.
+
+3.3 Safety checklist, tyre pressure and chain slack
+
+Treat the pre-ride checklist as a user-recorded inspection, not an automated guarantee that the motorcycle is safe.
+
+Do not present 25–30 mm chain slack as universal; store the specification for the specific motorcycle and refer to its owner manual.
+
+Store front and rear tyre pressure recommendations separately, including load conditions if relevant.
+
+Label pressure guidance as cold-tyre pressure when that is what the manufacturer specifies.
+
+Optionally record measured pressure, tread condition, inspection time, and notes.
+
+If a safety-critical item fails, show it clearly and advise the rider not to ride until the issue is assessed or corrected.
+
+3.4 Estimated fuel range
+
+Use estimated usable fuel remaining multiplied by recent or selected mileage. Tank capacity alone is not enough. For example, 5 L of estimated usable fuel × 25 km/L = 125 km estimated range. Label this as an estimate and communicate uncertainty.
+
+Track fuel consumed since the last full tank, or use a user-entered fuel-level estimate if supported.
+
+Do not imply that the app has a direct fuel-level sensor unless one is actually connected.
+
+Use a recent mileage window when enough valid data exists; otherwise show Not enough data.
+
+Consider a conservative estimate and a confidence label instead of false precision.
+
+3.5 Backup, restore, and document security
+
+Include a backup schema version and app version in exported JSON.
+
+Validate the complete backup before changing existing data.
+
+Import transactionally: if validation or import fails, existing data must remain intact.
+
+Prevent duplicate records when the same backup is imported twice; provide a clear replace/merge choice.
+
+Include document images in the backup or clearly state that images are excluded.
+
+Test large backups, corrupt JSON, missing fields, older backup versions, and interrupted imports.
+
+Require confirmation before wipe/reset and clearly describe what will be deleted.
+
+Consider app lock and encryption for personal documents, depending on the platform and threat model.
+
+Compression reduces storage size but is not encryption or access control.
+
+4. Recommended New Features
+
+Feature
+
+Scope
+
+Priority
+
+1. Fuel Economy Diagnostics
+
+Compare recent and lifetime mileage, identify unusual drops, track best/worst intervals, cost per kilometre, and fuel-station notes. Treat results as signals, not a definitive mechanical diagnosis.
+
+High
+
+2. Smart Maintenance Planner
+
+Upcoming maintenance timeline, distance and date reminders, component history, service cost, and next-service estimate. Use motorcycle-specific intervals.
+
+High
+
+3. Ownership Cost Analytics
+
+Monthly fuel, maintenance, repairs, insurance and PUC costs; annual cost; total cost per kilometre; exportable reports.
+
+High
+
+4. Trip Logbook
+
+Manual or optional GPS-assisted trip records with start/end odometer, distance, duration, category, and estimated fuel use. Make GPS optional and explain battery/permission implications.
+
+Medium
+
+5. Document Expiry & Reminder Center
+
+Configurable 30/15/7/1-day alerts, local notifications, renewal expense logging, and document status. Do not assume every document has identical renewal rules.
+
+High
+
+6. Multi-Bike Comparison
+
+Compare mileage, distance, monthly costs, maintenance spending and upcoming obligations across motorcycles. Every record must be linked to the correct bike.
+
+Medium
+
+7. Problem & Repair Journal
+
+Record symptoms, photos, workshop findings, repair actions, parts, costs, and whether the problem returned. Useful for recurring electrical, starting, brake, clutch, noise, or vibration issues.
+
+Medium
+
+8. Receipt OCR
+
+Extract likely service date, odometer, parts and amount from bills, with user confirmation before saving.
+
+Medium
+
+9. Service History Export
+
+Generate PDF/CSV reports for a mechanic, personal records, or resale preparation.
+
+Medium
+
+10. Cloud Synchronization
+
+Optional sync and recovery across devices, with conflict handling, authentication, and privacy controls.
+
+Later
+
+11. AI Maintenance Assistant
+
+Summarize the user's own records and explain possible causes of symptoms, while clearly separating suggestions from verified diagnosis.
+
+Later
+
+12. Resale-Ready Vehicle History
+
+Compile service records, mileage history, ownership costs and documents into a shareable report, with sensitive details excluded by default.
+
+Later
+
+5. Dashboard and UX Recommendations
+
+Keep the existing four metric tiles, but organize the dashboard around the rider's next decision.
+
+Header: selected motorcycle, registration identifier, and motorcycle switcher.
+
+Primary metrics: current odometer, recent mileage, estimated range, and next maintenance due.
+
+Action-required strip: overdue maintenance, upcoming document expiry, and failed safety checks.
+
+Quick actions: Log Refuel, Log Service, Pre-Ride Check, Add Expense, and Documents.
+
+Monthly ownership cost: fuel plus maintenance/repair totals.
+
+Show empty states with a clear next action rather than fabricated sample values.
+
+Use distinct labels for measured, user-entered, and estimated data.
+
+Keep important actions reachable on small screens and make touch targets accessible.
+
+6. Suggested Data Model
+
+Entity
+
+Important fields / relationships
+
+Motorcycle
+
+id, name, registration, current_odometer, tank_capacity, displacement, tyre specifications, configured service profile
+
+FuelEntry
+
+id, motorcycle_id, date, odometer, litres, price_per_litre, total_cost, station, full_tank flag, notes
+
+MaintenanceItem
+
+id, motorcycle_id, component, distance interval, time interval, last service reference, next due km/date, specification
+
+ServiceRecord
+
+id, motorcycle_id, date, odometer, work performed, parts, workshop, cost, notes, linked maintenance items
+
+Document
+
+id, motorcycle_id, type, issue date, expiry date, image reference, reminder settings
+
+Inspection
+
+id, motorcycle_id, timestamp, checklist results, failed items, notes
+
+Trip
+
+id, motorcycle_id, start/end odometer, duration, category, route data if explicitly enabled
+
+Expense
+
+id, motorcycle_id, date, category, amount, odometer, receipt reference, notes
+
+Reminder
+
+id, motorcycle_id, linked item, due date/odometer, notification state, snooze settings
+
+Data integrity rules
+
+Use stable unique IDs and foreign keys/relationships to the motorcycle.
+
+Recalculate derived metrics after changes to source records.
+
+Use consistent date storage and test local time-zone transitions.
+
+Use transactions for multi-record changes and restore operations.
+
+Validate numeric fields, date ranges, units, and required fields.
+
+Retain service history; use explicit corrections or revisions instead of silently erasing history where practical.
+
+Test storage quotas, database migrations, application restarts, offline operation, and failed writes.
+
+7. Development Roadmap
+
+Phase
+
+Focus
+
+Deliverables / exit criteria
+
+Phase 1 — Reliability
+
+Calculations and data integrity
+
+Fuel tests pass; maintenance due rules work; edits/deletes recompute analytics; multi-bike isolation verified; backup/restore is safe
+
+Phase 2 — Everyday usefulness
+
+Reminders and ownership insights
+
+Maintenance and expiry reminders; expense tracking; mileage trends; motorcycle-specific presets
+
+Phase 3 — Ownership intelligence
+
+Reports and richer records
+
+Trip logbook; ownership cost reports; service history export; receipt OCR with confirmation; repair journal
+
+Phase 4 — Advanced capabilities
+
+Cross-device and assisted workflows
+
+Optional sync; AI record summaries; cost estimates; workshop integrations; resale history report
+
+8. Testing Checklist and Acceptance Criteria
+
+Test
+
+Expected result
+
+Fresh install
+
+No mock/sample data is displayed; the user can configure a motorcycle.
+
+Input validation
+
+Blank name, invalid odometer, negative litres/cost, and invalid dates are rejected with useful messages.
+
+Fuel first entry
+
+First full-tank entry does not show fabricated mileage.
+
+Fuel interval
+
+Two valid full-tank entries produce the expected distance and km/L.
+
+Partial refill
+
+Partial fills do not produce misleading full-tank mileage.
+
+Fuel edit/delete
+
+All dependent mileage, cost, and chart values update correctly.
+
+Odometer correction
+
+Lower or duplicate readings are handled with clear validation/correction paths.
+
+Maintenance distance due
+
+Ran and Due in values match the configured interval.
+
+Maintenance date due
+
+Calendar due status works even when distance remains.
+
+Changed Today
+
+Creates a correctly dated service event at the current odometer and preserves history.
+
+Motorcycle isolation
+
+Changing the selected bike does not show or modify another bike's logs.
+
+Document reminders
+
+Valid, upcoming, and expired states are correct; notification settings are respected.
+
+Backup round trip
+
+Export then import preserves records and images as documented.
+
+Corrupt backup
+
+Failed import does not damage existing data.
+
+Duplicate import
+
+The app prevents accidental duplicate records or explains replace/merge behavior.
+
+Reset
+
+Wipe requires confirmation and clears only the intended local data.
+
+Offline use
+
+Core logging, viewing, and reminders work offline if offline support is a product requirement.
+
+Accessibility
+
+Labels, contrast, keyboard/screen-reader navigation, and touch targets are usable.
+
+9. Release Readiness Checklist
+
+☐ All calculations have unit tests and realistic edge-case tests.
+
+☐ No sample data appears in production unless the user explicitly enables a demo mode.
+
+☐ Empty, loading, error, and success states are designed.
+
+☐ Backup/restore and database migration have been tested on a copy of real-like data.
+
+☐ Sensitive documents are not exposed in logs or analytics.
+
+☐ Notification permissions and unavailable notification states are handled gracefully.
+
+☐ The app clearly labels estimates and does not claim sensor-based readings without hardware support.
+
+☐ Motorcycle-specific safety specifications are configurable and sourced from the owner manual.
+
+☐ A release build has been tested after force-close, restart, and device reboot.
+
+☐ A known-issues list and basic support/feedback path are available.
+
+10. Final Recommendation
+
+Do not prioritize AI diagnosis or cloud synchronization before the basic records are reliable. First stabilize fuel calculations, maintenance scheduling, record editing/deletion, offline persistence, and backup recovery. Then add reminders, ownership cost analytics, and a repair journal. These improvements provide everyday value while reducing the risk of misleading maintenance or mileage information.
+
+This document is a product and engineering review based on the supplied feature description. It identifies likely failure modes and recommended tests; it does not confirm that any particular bug exists in the current implementation. A source-code review and execution of the acceptance tests are required to identify reproducible defects.
+

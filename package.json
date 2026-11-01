@@ -1,0 +1,25 @@
+{
+  "name": "motopulse-bike-care",
+  "version": "1.0.0",
+  "description": "Mobile application for bike mileage tracking, service due alerts, and end-to-end motorcycle care",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build:apk": "npx cap copy android && cd android && gradlew.bat assembleDebug"
+  },
+  "keywords": [
+    "motorcycle",
+    "bike-care",
+    "mileage-tracker",
+    "service-due",
+    "pwa"
+  ],
+  "author": "MotoPulse",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
+}
