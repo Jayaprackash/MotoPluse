@@ -1,6 +1,7 @@
 # MotoPulse 🏍️ • Smart Motorcycle Companion
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Live Web App](https://img.shields.io/badge/Live%20Web%20App-jayaprackash.github.io%2FMotoPluse-red.svg?logo=googlechrome&logoColor=white)](https://jayaprackash.github.io/MotoPluse/)
 [![Download APK](https://img.shields.io/badge/Download-MotoPulse.apk%20(v2.4)-success?logo=android&logoColor=white)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android%208.0+-brightgreen.svg?logo=android&logoColor=white)](https://developer.android.com)
 [![Platform: iOS](https://img.shields.io/badge/Platform-iOS%2014.0+-black.svg?logo=apple&logoColor=white)](https://apple.com/ios)
@@ -11,15 +12,20 @@ A high-performance, open-source motorcycle companion application built for motor
 
 ---
 
-## 📦 Direct App Downloads & Installation
+## 🌐 Live Web App & Mobile Installation
 
-### Android (Direct APK)
-Install directly on any Android 8.0+ device without compiling from source:
+### 📱 iOS (iPhone & iPad Instant Install)
+1. Open **Safari** on your iPhone or iPad.
+2. Go to: **[https://jayaprackash.github.io/MotoPluse/](https://jayaprackash.github.io/MotoPluse/)**
+3. Tap the **Share** button (the square with an arrow pointing up at the bottom).
+4. Tap **"Add to Home Screen"** ➔ **Add**.
+5. MotoPulse will now run like a native iOS app with full screen view, offline cache, and camera access.
+
+### 🤖 Android (Direct APK Download)
+Download and install directly without compiling from source:
 👉 **[Download MotoPulse.apk (v2.4)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)**
 
-### iOS (iPhone & iPad)
-1. **Xcode Build:** Open the included native `ios/App/App.xcodeproj` in Xcode on macOS, select your iPhone / Simulator, and click **Run**.
-2. **Instant Offline PWA (No Mac Needed):** Open Safari on your iPhone, visit your hosted instance of MotoPulse, tap the **Share** button ➔ **Add to Home Screen**. MotoPulse installs as a standalone native-feeling app with offline Service Worker support and camera storage.
+*(Or open [https://jayaprackash.github.io/MotoPluse/](https://jayaprackash.github.io/MotoPluse/) in Chrome and tap "Install App").*
 
 ---
 
