@@ -2,7 +2,8 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Download APK](https://img.shields.io/badge/Download-MotoPulse.apk%20(v2.4)-success?logo=android&logoColor=white)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)
-[![Platform: Android](https://img.shields.io/badge/Platform-Android%208.0+-brightgreen.svg)](https://developer.android.com)
+[![Platform: Android](https://img.shields.io/badge/Platform-Android%208.0+-brightgreen.svg?logo=android&logoColor=white)](https://developer.android.com)
+[![Platform: iOS](https://img.shields.io/badge/Platform-iOS%2014.0+-black.svg?logo=apple&logoColor=white)](https://apple.com/ios)
 [![Offline First](https://img.shields.io/badge/Storage-100%25%20Offline-blue.svg)](https://github.com)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero%20Tracking-orange.svg)](https://github.com)
 
@@ -10,11 +11,15 @@ A high-performance, open-source motorcycle companion application built for motor
 
 ---
 
-## 📦 Direct APK Download
+## 📦 Direct App Downloads & Installation
 
+### Android (Direct APK)
 Install directly on any Android 8.0+ device without compiling from source:
+👉 **[Download MotoPulse.apk (v2.4)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)**
 
-👉 **[Download MotoPulse.apk (Direct Binary Download)](https://github.com/Jayaprackash/MotoPluse/raw/main/MotoPulse.apk)**
+### iOS (iPhone & iPad)
+1. **Xcode Build:** Open the included native `ios/App/App.xcodeproj` in Xcode on macOS, select your iPhone / Simulator, and click **Run**.
+2. **Instant Offline PWA (No Mac Needed):** Open Safari on your iPhone, visit your hosted instance of MotoPulse, tap the **Share** button ➔ **Add to Home Screen**. MotoPulse installs as a standalone native-feeling app with offline Service Worker support and camera storage.
 
 ---
 
@@ -64,7 +69,7 @@ Install directly on any Android 8.0+ device without compiling from source:
 ## 🛠️ Technology Stack
 
 - **Frontend:** Vanilla HTML5, Modern CSS3 with Custom Properties, JavaScript (ES6+ modular engines)
-- **Native Bridge:** [Capacitor](https://capacitorjs.com/) (Android WebView runtime)
+- **Native Bridges:** [Capacitor](https://capacitorjs.com/) (iOS WKWebView & Android WebView runtimes)
 - **Audio Engine:** Web Audio API (mechanical tactile sound effects)
 - **Graphics:** HTML5 Canvas (smooth bezier fuel economy curves) & SVG (circular progress rings)
 - **Local Database:** W3C LocalStorage / IndexedDB with client-side base64 compression
@@ -75,8 +80,8 @@ Install directly on any Android 8.0+ device without compiling from source:
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [Java Development Kit (JDK) 17](https://adoptium.net/)
-- [Android SDK](https://developer.android.com/studio) (API level 33+)
+- **For Android:** [Java Development Kit (JDK) 17](https://adoptium.net/) & [Android SDK](https://developer.android.com/studio)
+- **For iOS:** macOS with [Xcode 15+](https://developer.apple.com/xcode/) & CocoaPods / Swift Package Manager
 
 ### 1. Clone the Repository
 ```bash
@@ -95,18 +100,30 @@ node server.js
 ```
 Navigate to `http://localhost:8080`.
 
-### 4. Build Android APK from Source
+### 4. Build Android APK
 ```bash
-# 1. Sync web assets into Android project
+# Sync web assets into Android project
 npm run build
 npx cap sync android
 
-# 2. Compile debug APK using Gradle
+# Compile debug APK using Gradle
 cd android
 ./gradlew assembleDebug
 ```
-The newly compiled `.apk` will be output to:
-`android/app/build/outputs/apk/debug/app-debug.apk`
+Output: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### 5. Build iOS App (macOS & Xcode)
+```bash
+# Sync web assets into iOS project
+npx cap sync ios
+
+# Open project in Xcode
+npx cap open ios
+
+# Or compile via CLI
+cd ios/App
+xcodebuild -project App.xcodeproj -scheme App -destination "generic/platform=iOS Simulator" clean build CODE_SIGNING_ALLOWED=NO
+```
 
 ---
 

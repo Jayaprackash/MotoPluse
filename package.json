@@ -6,20 +6,26 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
-    "build:apk": "npx cap copy android && cd android && gradlew.bat assembleDebug"
+    "build:apk": "npx cap copy android && cd android && gradlew.bat assembleDebug",
+    "sync:ios": "npx cap sync ios",
+    "open:ios": "npx cap open ios",
+    "sync:all": "npx cap sync"
   },
   "keywords": [
     "motorcycle",
     "bike-care",
     "mileage-tracker",
     "service-due",
-    "pwa"
+    "pwa",
+    "ios",
+    "android"
   ],
-  "author": "MotoPulse",
-  "license": "MIT",
+  "author": "Jayaprackash",
+  "license": "Apache-2.0",
   "dependencies": {
     "@capacitor/android": "^8.6.0",
     "@capacitor/cli": "^8.6.0",
-    "@capacitor/core": "^8.6.0"
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "^8.6.0"
   }
 }
