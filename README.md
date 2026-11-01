@@ -1,6 +1,6 @@
 # MotoPulse 🏍️ • Smart Motorcycle Companion
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
+ [![License: Apache 2.0](https://shields.io)](https://opensource.org)
 [![Platform: Android](https://img.shields.io/badge/Platform-Android%208.0+-brightgreen.svg)](https://developer.android.com)
 [![Offline First](https://img.shields.io/badge/Storage-100%25%20Offline-blue.svg)](https://github.com)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero%20Tracking-orange.svg)](https://github.com)
